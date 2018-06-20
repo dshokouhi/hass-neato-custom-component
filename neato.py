@@ -79,7 +79,7 @@ ERRORS = {
     'ui_error_stuck': 'Stuck!',
     'dustbin_full': 'Dust bin full',
     'dustbin_missing': 'Dust bin missing',
-    'maint_brush_stuck': "Brush stuck',
+    'maint_brush_stuck': 'Brush stuck',
     'maint_brush_overload': 'Brush overloaded',
     'maint_bumper_stuck': 'Bumper stuck',
     'maint_vacuum_stuck': 'Vacuum is stuck',
