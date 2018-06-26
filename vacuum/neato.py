@@ -64,7 +64,7 @@ class NeatoConnectedVacuum(VacuumDevice):
         self.clean_suspension_charge_count = None
         self.clean_suspension_time = None
 
-    @Throttle(timedelta(seconds=60))
+    @Throttle(timedelta(seconds=300))
     def update(self):
         """Update the states of Neato Vacuums."""
         _LOGGER.debug("Running Neato Vacuums update")
