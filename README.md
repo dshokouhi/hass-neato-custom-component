@@ -4,7 +4,9 @@
 
 ### This page will kept open for users to help test new features
 
-This is a custom component designed for Home Assistant to test new Neato features
+This is a custom component designed for Home Assistant to test new Neato features.
+
+Currently testing `vacuum.locate` service
 
 Steps to install.
 
