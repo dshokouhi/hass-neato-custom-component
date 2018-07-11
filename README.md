@@ -1,9 +1,5 @@
 # Neato Custom Component For Home Assistant
 
-## This custom component is no longer needed after 0.73 please delete before you restart to upgrade, there are additional fixes there as well.
-
-### This page will kept open for users to help test new features
-
 This is a custom component designed for Home Assistant to test new Neato features.
 
 Currently testing `vacuum.locate` service
