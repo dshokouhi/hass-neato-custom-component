@@ -2,7 +2,7 @@
 
 This is a custom component designed for Home Assistant to test new Neato features.
 
-Currently testing `vacuum.locate` service
+Currently testing fixes for D7 firmware 4.3.1
 
 Steps to install.
 
