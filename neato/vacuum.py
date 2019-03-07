@@ -189,13 +189,17 @@ class NeatoConnectedVacuum(StateVacuumDevice):
         self._battery_level = self._state['details']['charge']
 
         if self._robot_has_map:
+            robot_map_id = {}
             if self._state['availableServices']['maps'] != "basic-1":
                 for maps in self._robot_maps[self._robot_serial]:
-                    robot_map_id = self._robot_maps[self._robot_serial][maps]['id']
+                    i = 0
+                    robot_map_id[i] = maps['id']
+                    i += 1
 
-                for maps in robot_map_id:
+                for map_id in robot_map_id:
+                    map = robot_map_id[map_id]
                     self._robot_boundaries = self.robot.get_map_boundaries(
-                        robot_map_id[maps]).json()
+                        map).json()
 
     @property
     def name(self):
@@ -299,9 +303,8 @@ class NeatoConnectedVacuum(StateVacuumDevice):
             if boundary_id is None:
                 _LOGGER.error(
                     "Zone '%s' was not found for the robot '%s'",
-                    zone, self._name
+                    zone, self._name)
                 return
-
         if map_name is not None:
             for maps in self._robot_maps[self._robot_serial]:
                 if map_name in maps['name']:
@@ -309,8 +312,8 @@ class NeatoConnectedVacuum(StateVacuumDevice):
             if map_id is None:
                 _LOGGER.error(
                     "Zone '%s' was not found for the robot '%s'",
-                    map_name, self._name
+                    map_name, self._name)
                 return
-                    
+
         self._clean_state = STATE_CLEANING
         self.robot.start_cleaning(mode, navigation, category, boundary_id, map_id)
