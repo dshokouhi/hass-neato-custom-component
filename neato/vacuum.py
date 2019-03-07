@@ -40,6 +40,7 @@ ATTR_MODE = 'mode'
 ATTR_NAVIGATION = 'navigation'
 ATTR_CATEGORY = 'category'
 ATTR_ZONE = 'zone'
+ATTR_MAP = 'map'
 
 SERVICE_NEATO_CUSTOM_CLEANING = 'neato_custom_cleaning'
 
@@ -48,7 +49,8 @@ SERVICE_NEATO_CUSTOM_CLEANING_SCHEMA = vol.Schema({
     vol.Optional(ATTR_MODE, default=2): cv.positive_int,
     vol.Optional(ATTR_NAVIGATION, default=1): cv.positive_int,
     vol.Optional(ATTR_CATEGORY, default=4): cv.positive_int,
-    vol.Optional(ATTR_ZONE): cv.string
+    vol.Optional(ATTR_ZONE): cv.string,
+    vol.Optional(ATTR_MAP): cv.string
 })
 
 
@@ -72,8 +74,9 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
                 navigation = call.data.get(ATTR_NAVIGATION)
                 category = call.data.get(ATTR_CATEGORY)
                 zone = call.data.get(ATTR_ZONE)
+                maps = call.data.get(ATTR_MAP)
                 robot.neato_custom_cleaning(
-                    mode, navigation, category, zone)
+                    mode, navigation, category, zone, maps)
 
     def service_to_entities(call):
         """Return the known devices that a service call mentions."""
@@ -187,10 +190,12 @@ class NeatoConnectedVacuum(StateVacuumDevice):
 
         if self._robot_has_map:
             if self._state['availableServices']['maps'] != "basic-1":
-                robot_map_id = self._robot_maps[self._robot_serial][0]['id']
+                for maps in self._robot_maps[self._robot_serial]:
+                    robot_map_id = self._robot_maps[self._robot_serial][maps]['id']
 
-                self._robot_boundaries = self.robot.get_map_boundaries(
-                    robot_map_id).json()
+                for maps in robot_map_id:
+                    self._robot_boundaries = self.robot.get_map_boundaries(
+                        robot_map_id[maps]).json()
 
     @property
     def name(self):
@@ -283,9 +288,10 @@ class NeatoConnectedVacuum(StateVacuumDevice):
         self.robot.start_spot_cleaning()
 
     def neato_custom_cleaning(self, mode, navigation, category,
-                              zone=None, **kwargs):
+                              zone=None, map_name=None, **kwargs):
         """Zone cleaning service call."""
         boundary_id = None
+        map_id = None
         if zone is not None:
             for boundary in self._robot_boundaries['data']['boundaries']:
                 if zone in boundary['name']:
@@ -293,8 +299,18 @@ class NeatoConnectedVacuum(StateVacuumDevice):
             if boundary_id is None:
                 _LOGGER.error(
                     "Zone '%s' was not found for the robot '%s'",
-                    zone, self._name)
+                    zone, self._name
                 return
 
+        if map_name is not None:
+            for maps in self._robot_maps[self._robot_serial]:
+                if map_name in maps['name']:
+                    map_id = maps['id']
+            if map_id is None:
+                _LOGGER.error(
+                    "Zone '%s' was not found for the robot '%s'",
+                    map_name, self._name
+                return
+                    
         self._clean_state = STATE_CLEANING
-        self.robot.start_cleaning(mode, navigation, category, boundary_id)
+        self.robot.start_cleaning(mode, navigation, category, boundary_id, map_id)
