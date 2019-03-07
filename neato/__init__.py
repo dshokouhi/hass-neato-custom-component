@@ -10,7 +10,8 @@ from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.helpers import discovery
 from homeassistant.util import Throttle
 
-REQUIREMENTS = ['pybotvac==0.0.13']
+REQUIREMENTS = ['https://github.com/dshokouhi/pybotvac/archive/0.0.13a.zip'
+                '#pybotvac==0.0.13a']
 
 _LOGGER = logging.getLogger(__name__)
 
