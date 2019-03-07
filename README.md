@@ -12,3 +12,13 @@ Steps to install.
 4. Restart Home Assistant
 
 Enjoy using your Botvac in Home Assistant!
+
+Service call: `vacuum.neato_custom_cleaning`
+
+Service data for cleaning with a map only, see official docs for all other accepted parameters:  
+`
+{
+"entity_id":"vacuum.neato",
+"map": "<map name from neato app>"
+}
+`
