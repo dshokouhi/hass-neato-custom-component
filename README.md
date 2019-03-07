@@ -2,7 +2,7 @@
 
 This is a custom component designed for Home Assistant to test new Neato features.
 
-Currently testing: nothing all fixes are current with home assistant dev branch.
+Currently testing: multiple floorplans
 
 Steps to install.
 
