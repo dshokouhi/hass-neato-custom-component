@@ -191,15 +191,16 @@ class NeatoConnectedVacuum(StateVacuumDevice):
         if self._robot_has_map:
             robot_map_id = {}
             if self._state['availableServices']['maps'] != "basic-1":
-                for maps in self._robot_maps[self._robot_serial]:
-                    i = 0
-                    robot_map_id[i] = maps['id']
-                    i += 1
+                if 'id' in self._robot_maps[self._robot_serial][0]:
+                    for maps in self._robot_maps[self._robot_serial]:
+                        i = 0
+                        robot_map_id[i] = maps['id']
+                        i += 1
 
-                for map_id in robot_map_id:
-                    map = robot_map_id[map_id]
-                    self._robot_boundaries = self.robot.get_map_boundaries(
-                        map).json()
+                    for map_id in robot_map_id:
+                        map = robot_map_id[map_id]
+                        self._robot_boundaries = self.robot.get_map_boundaries(
+                            map).json()
 
     @property
     def name(self):
