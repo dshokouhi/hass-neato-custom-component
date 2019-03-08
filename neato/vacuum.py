@@ -11,7 +11,7 @@ from homeassistant.components.vacuum import (
     STATE_PAUSED, STATE_CLEANING, STATE_DOCKED, STATE_RETURNING, STATE_ERROR,
     SUPPORT_MAP, ATTR_STATUS, ATTR_BATTERY_LEVEL, ATTR_BATTERY_ICON,
     SUPPORT_LOCATE, SUPPORT_CLEAN_SPOT, DOMAIN)
-from homeassistant.components.neato import (
+from custom_components.neato import (
     NEATO_ROBOTS, NEATO_LOGIN, NEATO_MAP_DATA, ACTION, ERRORS, MODE, ALERTS,
     NEATO_PERSISTENT_MAPS)
 
