@@ -311,7 +311,7 @@ class NeatoConnectedVacuum(StateVacuumDevice):
                     map_id = maps['id']
             if map_id is None:
                 _LOGGER.error(
-                    "Zone '%s' was not found for the robot '%s'",
+                    "Map '%s' was not found for the robot '%s'",
                     map_name, self._name)
                 return
 
