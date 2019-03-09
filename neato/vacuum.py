@@ -316,4 +316,5 @@ class NeatoConnectedVacuum(StateVacuumDevice):
                 return
 
         self._clean_state = STATE_CLEANING
-        self.robot.start_cleaning(mode, navigation, category, boundary_id, map_id)
+        self.robot.start_cleaning(mode, navigation, category, boundary_id,
+                                  map_id)
