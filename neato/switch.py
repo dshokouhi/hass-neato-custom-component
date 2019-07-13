@@ -8,8 +8,6 @@ from homeassistant.components.neato import NEATO_ROBOTS, NEATO_LOGIN
 
 _LOGGER = logging.getLogger(__name__)
 
-DEPENDENCIES = ['neato']
-
 SCAN_INTERVAL = timedelta(minutes=10)
 
 SWITCH_TYPE_SCHEDULE = 'schedule'
