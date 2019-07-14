@@ -2,7 +2,7 @@
 
 This is a custom component designed for Home Assistant to test new Neato features.
 
-Currently testing: multiple floorplans and latest pybotvac additions including Vorwerk robots
+Currently testing: multiple floorplans and latest pybotvac additions including Vorwerk robots (add `vendor: 'vorwerk'` to the `neato` configuration mentioned in step 3 below)
 
 Steps to install.
 
