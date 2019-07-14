@@ -12,6 +12,7 @@ from homeassistant.util import Throttle
 
 _LOGGER = logging.getLogger(__name__)
 
+CONF_VENDOR = 'vendor'
 DOMAIN = 'neato'
 NEATO_ROBOTS = 'neato_robots'
 NEATO_LOGIN = 'neato_login'
@@ -22,6 +23,7 @@ CONFIG_SCHEMA = vol.Schema({
     DOMAIN: vol.Schema({
         vol.Required(CONF_USERNAME): cv.string,
         vol.Required(CONF_PASSWORD): cv.string,
+        vol.Optional(CONF_VENDOR, default='neato'): CV.string
     })
 }, extra=vol.ALLOW_EXTRA)
 
@@ -169,9 +171,12 @@ ALERTS = {
 
 def setup(hass, config):
     """Set up the Neato component."""
-    from pybotvac import Account
+    from pybotvac import Account, Neato, Vorwerk
 
-    hass.data[NEATO_LOGIN] = NeatoHub(hass, config[DOMAIN], Account)
+    if config[CONF_VENDOR] == 'neato':
+        hass.data[NEATO_LOGIN] = NeatoHub(hass, config[DOMAIN], Account, Neato)
+    elif config[CONF_VENDOR] == 'vorwerk':
+        hass.data[NEATO_LOGIN] = NeatoHub(hass, config[DOMAIN], Account, Vorwerk)
     hub = hass.data[NEATO_LOGIN]
     if not hub.login():
         _LOGGER.debug("Failed to login to Neato API")
@@ -186,7 +191,7 @@ def setup(hass, config):
 class NeatoHub:
     """A My Neato hub wrapper class."""
 
-    def __init__(self, hass, domain_config, neato):
+    def __init__(self, hass, domain_config, neato, vendor):
         """Initialize the Neato hub."""
         self.config = domain_config
         self._neato = neato
@@ -194,7 +199,8 @@ class NeatoHub:
 
         self.my_neato = neato(
             domain_config[CONF_USERNAME],
-            domain_config[CONF_PASSWORD])
+            domain_config[CONF_PASSWORD],
+            vendor)
         self._hass.data[NEATO_ROBOTS] = self.my_neato.robots
         self._hass.data[NEATO_PERSISTENT_MAPS] = self.my_neato.persistent_maps
         self._hass.data[NEATO_MAP_DATA] = self.my_neato.maps
