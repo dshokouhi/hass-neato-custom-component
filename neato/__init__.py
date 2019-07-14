@@ -195,6 +195,7 @@ class NeatoHub:
         """Initialize the Neato hub."""
         self.config = domain_config
         self._neato = neato
+        self._vendor = vendor
         self._hass = hass
 
         self.my_neato = neato(
@@ -210,7 +211,9 @@ class NeatoHub:
         try:
             _LOGGER.debug("Trying to connect to Neato API")
             self.my_neato = self._neato(
-                self.config[CONF_USERNAME], self.config[CONF_PASSWORD])
+                self.config[CONF_USERNAME],
+                self.config[CONF_PASSWORD],
+                self._vendor)
             return True
         except HTTPError:
             _LOGGER.error("Unable to connect to Neato API")
