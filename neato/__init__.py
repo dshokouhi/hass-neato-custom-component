@@ -173,9 +173,9 @@ def setup(hass, config):
     """Set up the Neato component."""
     from pybotvac import Account, Neato, Vorwerk
 
-    if config[CONF_VENDOR] == 'neato':
+    if config[DOMAIN][CONF_VENDOR] == 'neato':
         hass.data[NEATO_LOGIN] = NeatoHub(hass, config[DOMAIN], Account, Neato)
-    elif config[CONF_VENDOR] == 'vorwerk':
+    elif config[DOMAIN][CONF_VENDOR] == 'vorwerk':
         hass.data[NEATO_LOGIN] = NeatoHub(hass, config[DOMAIN], Account, Vorwerk)
     hub = hass.data[NEATO_LOGIN]
     if not hub.login():
