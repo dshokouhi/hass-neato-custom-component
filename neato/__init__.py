@@ -172,7 +172,7 @@ ALERTS = {
 
 def setup(hass, config):
     """Set up the Neato component."""
-    from pybotvac import Account, Neato, Vorwerk
+    from .pybotvac import Account, Neato, Vorwerk
 
     if config[DOMAIN][CONF_VENDOR] == 'neato':
         hass.data[NEATO_LOGIN] = NeatoHub(hass, config[DOMAIN], Account, Neato)
