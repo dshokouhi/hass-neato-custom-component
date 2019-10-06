@@ -2,7 +2,7 @@
 
 This is a custom component designed for Home Assistant to test new Neato features.
 
-Currently testing: Config flows https://github.com/dshokouhi/hass-neato-custom-component/tree/config_flow
+Currently testing: Nothing, all changes current or more recent in HA dev as of 0.101
 
 Steps to install.
 
