@@ -72,6 +72,7 @@ ATTR_LAUNCHED_FROM = "launched_from"
 ATTR_NAVIGATION = "navigation"
 ATTR_CATEGORY = "category"
 ATTR_ZONE = "zone"
+ATTR_MAP = 'map'
 
 SERVICE_NEATO_CUSTOM_CLEANING_SCHEMA = vol.Schema(
     {
@@ -80,6 +81,7 @@ SERVICE_NEATO_CUSTOM_CLEANING_SCHEMA = vol.Schema(
         vol.Optional(ATTR_NAVIGATION, default=1): cv.positive_int,
         vol.Optional(ATTR_CATEGORY, default=4): cv.positive_int,
         vol.Optional(ATTR_ZONE): cv.string,
+        vol.Optional(ATTR_MAP): cv.string,
     }
 )
 
@@ -107,8 +109,9 @@ async def async_setup_entry(hass, entry, async_add_entities):
                 navigation = call.data.get(ATTR_NAVIGATION)
                 category = call.data.get(ATTR_CATEGORY)
                 zone = call.data.get(ATTR_ZONE)
+                maps = call.data.get(ATTR_MAP)
                 try:
-                    robot.neato_custom_cleaning(mode, navigation, category, zone)
+                    robot.neato_custom_cleaning(mode, navigation, category, zone, maps)
                 except NeatoRobotException as ex:
                     _LOGGER.error("Neato vacuum connection error: %s", ex)
 
@@ -373,9 +376,11 @@ class NeatoConnectedVacuum(StateVacuumDevice):
         except NeatoRobotException as ex:
             _LOGGER.error("Neato vacuum connection error: %s", ex)
 
-    def neato_custom_cleaning(self, mode, navigation, category, zone=None, **kwargs):
+    def neato_custom_cleaning(self, mode, navigation, category, zone=None,
+                               map_name=None, **kwargs):
         """Zone cleaning service call."""
         boundary_id = None
+        map_id = None
         if zone is not None:
             for boundary in self._robot_boundaries["data"]["boundaries"]:
                 if zone in boundary["name"]:
@@ -385,9 +390,17 @@ class NeatoConnectedVacuum(StateVacuumDevice):
                     "Zone '%s' was not found for the robot '%s'", zone, self._name
                 )
                 return
-
+        if map_name is not None:
+            for maps in self._robot_maps[self._robot_serial]:
+                if map_name in maps['name']:
+                    map_id = maps['id']
+            if map_id is None:
+                _LOGGER.error(
+                    "Map '%s' was not found for the robot '%s'",
+                    map_name, self._name)
+                return
         self._clean_state = STATE_CLEANING
         try:
-            self.robot.start_cleaning(mode, navigation, category, boundary_id)
+            self.robot.start_cleaning(mode, navigation, category, boundary_id, map_id)
         except NeatoRobotException as ex:
             _LOGGER.error("Neato vacuum connection error: %s", ex)
