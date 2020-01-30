@@ -17,5 +17,5 @@ custom_cleaning:
       description: Only supported on the Botvac D7. Name of the zone to clean. Defaults to no zone i.e. complete house cleanup.
       example: "Kitchen"
     map:
-      description: "Name of the map to clean, must be specified to clean zones in additional floorplans"
+      description: "Name of the map to clean, must be specified to clean zones in additional floorplans."
       example: "Upstairs"
