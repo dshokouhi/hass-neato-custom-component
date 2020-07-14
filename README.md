@@ -2,7 +2,7 @@
 
 This is a custom component designed for Home Assistant to test new Neato features.
 
-Currently testing: Nothing, all changes current or more recent in HA dev as of 0.101
+Currently testing: Nothing, all changes current or more recent in HA dev as of 0.113
 
 Steps to install.
 
