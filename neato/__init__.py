@@ -55,33 +55,33 @@ async def async_setup(hass, config):
     if entries:
         # There is an entry and something in the configuration.yaml
         for entry in entries:
-            # entry = entries[0]
             conf = config[NEATO_DOMAIN]
             if not entry.unique_id:
-                uniqueId = f"{entry.data[CONF_USERNAME]}-{entry.data[CONF_VENDOR]}"
+                uniqueId = f"{entry.data[CONF_VENDOR]}"
                 hass.config_entries.async_update_entry(entry, unique_id=uniqueId)
 
-            if (
-                entry.data[CONF_USERNAME] == conf[CONF_USERNAME]
-                and entry.data[CONF_PASSWORD] == conf[CONF_PASSWORD]
-                and entry.data[CONF_VENDOR] == conf[CONF_VENDOR]
-            ):
-                # The entry is not outdated
-                return True
+            if (entry.unique_id == f"{conf[CONF_USERNAME]}-{conf[CONF_VENDOR]}"):
+                if (
+                    entry.data[CONF_USERNAME] == conf[CONF_USERNAME]
+                    and entry.data[CONF_PASSWORD] == conf[CONF_PASSWORD]
+                    and entry.data[CONF_VENDOR] == conf[CONF_VENDOR]
+                ):
+                    # The entry is not outdated
+                    return True
 
-            # The entry is outdated
-            error = await hass.async_add_executor_job(
-                NeatoConfigFlow.try_login,
-                conf[CONF_USERNAME],
-                conf[CONF_PASSWORD],
-                conf[CONF_VENDOR],
-            )
-            if error is not None:
-                _LOGGER.error(error)
-                return False
+                # The entry is outdated
+                error = await hass.async_add_executor_job(
+                    NeatoConfigFlow.try_login,
+                    conf[CONF_USERNAME],
+                    conf[CONF_PASSWORD],
+                    conf[CONF_VENDOR],
+                )
+                if error is not None:
+                    _LOGGER.error(error)
+                    return False
 
-            # Update the entry
-            hass.config_entries.async_update_entry(entry, data=config[NEATO_DOMAIN])
+                # Update the entry
+                hass.config_entries.async_update_entry(entry, data=config[NEATO_DOMAIN])
     else:
         # Create the new entry
         hass.async_create_task(
