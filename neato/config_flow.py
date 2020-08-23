@@ -52,7 +52,7 @@ class NeatoConfigFlow(config_entries.ConfigFlow, domain=NEATO_DOMAIN):
                 await self.async_set_unique_id(uniqueId)
                 self._abort_if_unique_id_configured()
                 return self.async_create_entry(
-                    title=user_input[CONF_USERNAME],
+                    title=uniqueId,
                     data=user_input,
                     description_placeholders={"docs_url": DOCS_URL},
                 )
@@ -91,7 +91,7 @@ class NeatoConfigFlow(config_entries.ConfigFlow, domain=NEATO_DOMAIN):
         await self.async_set_unique_id(uniqueId)
         self._abort_if_unique_id_configured()
         return self.async_create_entry(
-            title=f"{username} (from configuration)",
+            title=f"{uniqueId} (from configuration)",
             data={
                 CONF_USERNAME: username,
                 CONF_PASSWORD: password,
