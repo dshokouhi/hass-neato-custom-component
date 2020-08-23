@@ -57,7 +57,7 @@ async def async_setup(hass, config):
         for entry in entries:
             conf = config[NEATO_DOMAIN]
             if not entry.unique_id:
-                uniqueId = f"{conf[CONF_USERNAME]}{conf[CONF_VENDOR]}"
+                uniqueId = f"{conf[CONF_USERNAME]}-{conf[CONF_VENDOR]}"
                 hass.config_entries.async_update_entry(entry, unique_id=uniqueId)
 
             if (entry.unique_id == f"{conf[CONF_USERNAME]}-{conf[CONF_VENDOR]}"):
