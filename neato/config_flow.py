@@ -34,25 +34,22 @@ class NeatoConfigFlow(config_entries.ConfigFlow, domain=NEATO_DOMAIN):
         """Handle a flow initialized by the user."""
         errors = {}
 
-        # if self._async_current_entries():
-        #     return self.async_abort(reason="already_configured")
-
         if user_input is not None:
             self._username = user_input["username"]
             self._password = user_input["password"]
             self._vendor = user_input["vendor"]
             uniqueId = f"{self._username}-{self._vendor}"
 
+            await self.async_set_unique_id(uniqueId)
+            self._abort_if_unique_id_configured()
             error = await self.hass.async_add_executor_job(
                 self.try_login, self._username, self._password, self._vendor
             )
             if error:
                 errors["base"] = error
             else:
-                await self.async_set_unique_id(uniqueId)
-                self._abort_if_unique_id_configured()
                 return self.async_create_entry(
-                    title=uniqueId,
+                    title=user_input[CONF_USERNAME],
                     data=user_input,
                     description_placeholders={"docs_url": DOCS_URL},
                 )
@@ -73,14 +70,13 @@ class NeatoConfigFlow(config_entries.ConfigFlow, domain=NEATO_DOMAIN):
     async def async_step_import(self, user_input):
         """Import a config flow from configuration."""
 
-        # if self._async_current_entries():
-        #     return self.async_abort(reason="already_configured")
-
         username = user_input[CONF_USERNAME]
         password = user_input[CONF_PASSWORD]
         vendor = user_input[CONF_VENDOR]
         uniqueId = f"{username}-{vendor}"
 
+        await self.async_set_unique_id(uniqueId)
+        self._abort_if_unique_id_configured()
         error = await self.hass.async_add_executor_job(
             self.try_login, username, password, vendor
         )
@@ -88,10 +84,8 @@ class NeatoConfigFlow(config_entries.ConfigFlow, domain=NEATO_DOMAIN):
             _LOGGER.error(error)
             return self.async_abort(reason=error)
 
-        await self.async_set_unique_id(uniqueId)
-        self._abort_if_unique_id_configured()
         return self.async_create_entry(
-            title=f"{uniqueId} (from configuration)",
+            title=f"{username} (from configuration)",
             data={
                 CONF_USERNAME: username,
                 CONF_PASSWORD: password,
