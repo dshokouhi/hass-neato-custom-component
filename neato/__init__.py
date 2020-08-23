@@ -98,8 +98,9 @@ async def async_setup(hass, config):
 async def async_setup_entry(hass, entry):
     """Set up config entry."""
     for entries in hass.config_entries.async_entries(NEATO_DOMAIN):
-        if entries.unique_id == f"{entry.data[CONF_USERNAME]}-{entry.data[CONF_VENDOR]}":
-            hub = NeatoHub(hass, entries.data, Account)
+        if entries.unique_id == entry.unique_id:
+            _LOGGER.debug("Found the correct unique ID")
+            hub = NeatoHub(hass, entry.data, Account)
 
             await hass.async_add_executor_job(hub.login)
             if not hub.logged_in:
