@@ -60,7 +60,7 @@ async def async_setup(hass, config):
                 uniqueId = f"{conf[CONF_USERNAME]}-{conf[CONF_VENDOR]}"
                 hass.config_entries.async_update_entry(entry, unique_id=uniqueId)
 
-            if (entry.unique_id == f"{conf[CONF_USERNAME]}-{conf[CONF_VENDOR]}"):
+            if entry.unique_id == f"{conf[CONF_USERNAME]}-{conf[CONF_VENDOR]}":
                 if (
                     entry.data[CONF_USERNAME] == conf[CONF_USERNAME]
                     and entry.data[CONF_PASSWORD] == conf[CONF_PASSWORD]
@@ -100,7 +100,7 @@ async def async_setup_entry(hass, entry):
     for entries in hass.config_entries.async_entries(NEATO_DOMAIN):
         if entries.unique_id == entry.unique_id:
             _LOGGER.debug("Found the correct unique ID")
-            hub = NeatoHub(hass, entry.data, Account)
+            hub = NeatoHub(hass, entry, Account)
 
             await hass.async_add_executor_job(hub.login)
             if not hub.logged_in:
@@ -113,7 +113,12 @@ async def async_setup_entry(hass, entry):
                 _LOGGER.debug("Failed to connect to Neato API")
                 raise ConfigEntryNotReady
 
-            hass.data[NEATO_LOGIN] = hub
+            hass.data.setdefault(NEATO_DOMAIN, {})
+            hass.data[NEATO_DOMAIN][entry.unique_id] = {
+                NEATO_LOGIN: hub,
+                NEATO_ROBOTS: [],
+                NEATO_MAP_DATA: []
+            }
 
             for component in ("camera", "vacuum", "switch", "sensor"):
                 hass.async_create_task(
@@ -125,7 +130,7 @@ async def async_setup_entry(hass, entry):
 
 async def async_unload_entry(hass, entry):
     """Unload config entry."""
-    hass.data.pop(NEATO_LOGIN)
+    hass.data.pop(NEATO_LOGIN)[entry.unique_id]
     await asyncio.gather(
         hass.config_entries.async_forward_entry_unload(entry, "camera"),
         hass.config_entries.async_forward_entry_unload(entry, "vacuum"),
@@ -144,7 +149,7 @@ class NeatoHub:
         self._neato = neato
         self._hass = hass
 
-        if self.config[CONF_VENDOR] == "vorwerk":
+        if self.config.data[CONF_VENDOR] == "vorwerk":
             self._vendor = Vorwerk()
         else:  # Neato
             self._vendor = Neato()
@@ -157,7 +162,7 @@ class NeatoHub:
         _LOGGER.debug("Trying to connect to Neato API")
         try:
             self.my_neato = self._neato(
-                self.config[CONF_USERNAME], self.config[CONF_PASSWORD], self._vendor
+                self.config.data[CONF_USERNAME], self.config.data[CONF_PASSWORD], self._vendor
             )
         except NeatoException as ex:
             if isinstance(ex, NeatoLoginException):
