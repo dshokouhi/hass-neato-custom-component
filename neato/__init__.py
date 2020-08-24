@@ -116,8 +116,9 @@ async def async_setup_entry(hass, entry):
             hass.data.setdefault(NEATO_DOMAIN, {})
             hass.data[NEATO_DOMAIN][entry.unique_id] = {
                 NEATO_LOGIN: hub,
-                NEATO_ROBOTS: [],
-                NEATO_MAP_DATA: []
+                NEATO_ROBOTS: hub.return_robots(),
+                NEATO_PERSISTENT_MAPS: hub.return_persistent_maps(),
+                NEATO_MAP_DATA: hub.return_maps()
             }
 
             for component in ("camera", "vacuum", "switch", "sensor"):
@@ -184,6 +185,14 @@ class NeatoHub:
         self._hass.data[NEATO_PERSISTENT_MAPS] = self.my_neato.persistent_maps
         self._hass.data[NEATO_MAP_DATA] = self.my_neato.maps
 
+    def return_robots(self):
+        """Return the robots."""
+        return self._hass.data[NEATO_ROBOTS]
+
+    def return_persistent_maps(self):
+        return self._hass.data[NEATO_PERSISTENT_MAPS]
+    def return_maps(self):
+        return self._hass.data[NEATO_MAP_DATA]
     def download_map(self, url):
         """Download a new map image."""
         map_image_data = self.my_neato.get_map_image(url)

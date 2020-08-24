@@ -24,8 +24,10 @@ async def async_setup_entry(hass, entry, async_add_entities):
     """Set up Neato camera with config entry."""
     dev = []
     neato = hass.data[NEATO_DOMAIN][entry.unique_id].get(NEATO_LOGIN)
-    mapdata = hass.data.get(NEATO_MAP_DATA)
-    for robot in hass.data[NEATO_ROBOTS]:
+    mapdata = hass.data[NEATO_DOMAIN][entry.unique_id].get(NEATO_MAP_DATA)
+    robots = hass.data[NEATO_DOMAIN][entry.unique_id].get(NEATO_ROBOTS)
+    _LOGGER.debug("your robots %s", robots)
+    for robot in robots:
         if "maps" in robot.traits:
             dev.append(NeatoCleaningMap(neato, robot, mapdata))
 

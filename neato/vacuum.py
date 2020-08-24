@@ -87,10 +87,10 @@ SERVICE_NEATO_CUSTOM_CLEANING_SCHEMA = vol.Schema(
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up Neato vacuum with config entry."""
     dev = []
-    neato = hass.data.get(NEATO_LOGIN)
-    mapdata = hass.data.get(NEATO_MAP_DATA)
-    persistent_maps = hass.data.get(NEATO_PERSISTENT_MAPS)
-    for robot in hass.data[NEATO_ROBOTS]:
+    neato = hass.data[NEATO_DOMAIN][entry.unique_id].get(NEATO_LOGIN)
+    mapdata = hass.data[NEATO_DOMAIN][entry.unique_id].get(NEATO_MAP_DATA)
+    persistent_maps = hass.data[NEATO_DOMAIN][entry.unique_id].get(NEATO_PERSISTENT_MAPS)
+    for robot in hass.data[NEATO_DOMAIN][entry.unique_id].get(NEATO_ROBOTS):
         dev.append(NeatoConnectedVacuum(neato, robot, mapdata, persistent_maps))
 
     if not dev:
@@ -264,12 +264,13 @@ class NeatoConnectedVacuum(StateVacuumEntity):
                     maps["name"],
                     robot_boundaries,
                 )
-                self._robot_boundaries += robot_boundaries["data"]["boundaries"]
-                _LOGGER.debug(
-                    "List of boundaries for '%s': %s",
-                    self.entity_id,
-                    self._robot_boundaries,
-                )
+                if "boundaries" in robot_boundaries["data"]:
+                    self._robot_boundaries += robot_boundaries["data"]["boundaries"]
+                    _LOGGER.debug(
+                        "List of boundaries for '%s': %s",
+                        self.entity_id,
+                        self._robot_boundaries,
+                    )
 
     @property
     def name(self):

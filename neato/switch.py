@@ -21,8 +21,8 @@ SWITCH_TYPES = {SWITCH_TYPE_SCHEDULE: ["Schedule"]}
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up Neato switch with config entry."""
     dev = []
-    neato = hass.data.get(NEATO_LOGIN)
-    for robot in hass.data[NEATO_ROBOTS]:
+    neato = hass.data[NEATO_DOMAIN][entry.unique_id].get(NEATO_LOGIN)
+    for robot in hass.data[NEATO_DOMAIN][entry.unique_id].get(NEATO_ROBOTS):
         for type_name in SWITCH_TYPES:
             dev.append(NeatoConnectedSwitch(neato, robot, type_name))
 

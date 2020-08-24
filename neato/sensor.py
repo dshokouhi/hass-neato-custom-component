@@ -20,8 +20,8 @@ BATTERY = "Battery"
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the Neato sensor using config entry."""
     dev = []
-    neato = hass.data.get(NEATO_LOGIN)
-    for robot in hass.data[NEATO_ROBOTS]:
+    neato = hass.data[NEATO_DOMAIN][entry.unique_id].get(NEATO_LOGIN)
+    for robot in hass.data[NEATO_DOMAIN][entry.unique_id].get(NEATO_ROBOTS):
         dev.append(NeatoSensor(neato, robot))
 
     if not dev:
