@@ -23,7 +23,7 @@ ATTR_GENERATED_AT = "generated_at"
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up Neato camera with config entry."""
     dev = []
-    neato = hass.data.get(NEATO_LOGIN)
+    neato = hass.data[NEATO_DOMAIN][entry.unique_id].get(NEATO_LOGIN)
     mapdata = hass.data.get(NEATO_MAP_DATA)
     for robot in hass.data[NEATO_ROBOTS]:
         if "maps" in robot.traits:
