@@ -89,8 +89,11 @@ async def async_setup_entry(hass, entry, async_add_entities):
     dev = []
     neato = hass.data[NEATO_DOMAIN][entry.unique_id].get(NEATO_LOGIN)
     mapdata = hass.data[NEATO_DOMAIN][entry.unique_id].get(NEATO_MAP_DATA)
-    persistent_maps = hass.data[NEATO_DOMAIN][entry.unique_id].get(NEATO_PERSISTENT_MAPS)
-    for robot in hass.data[NEATO_DOMAIN][entry.unique_id].get(NEATO_ROBOTS):
+    persistent_maps = hass.data[NEATO_DOMAIN][entry.unique_id].get(
+        NEATO_PERSISTENT_MAPS
+    )
+    robots = hass.data[NEATO_DOMAIN][entry.unique_id].get(NEATO_ROBOTS)
+    for robot in robots:
         dev.append(NeatoConnectedVacuum(neato, robot, mapdata, persistent_maps))
 
     if not dev:

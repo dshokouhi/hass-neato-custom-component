@@ -118,7 +118,7 @@ async def async_setup_entry(hass, entry):
                 NEATO_LOGIN: hub,
                 NEATO_ROBOTS: hub.return_robots(),
                 NEATO_PERSISTENT_MAPS: hub.return_persistent_maps(),
-                NEATO_MAP_DATA: hub.return_maps()
+                NEATO_MAP_DATA: hub.return_maps(),
             }
 
             for component in ("camera", "vacuum", "switch", "sensor"):
@@ -163,7 +163,9 @@ class NeatoHub:
         _LOGGER.debug("Trying to connect to Neato API")
         try:
             self.my_neato = self._neato(
-                self.config.data[CONF_USERNAME], self.config.data[CONF_PASSWORD], self._vendor
+                self.config.data[CONF_USERNAME],
+                self.config.data[CONF_PASSWORD],
+                self._vendor,
             )
         except NeatoException as ex:
             if isinstance(ex, NeatoLoginException):
@@ -190,9 +192,13 @@ class NeatoHub:
         return self._hass.data[NEATO_ROBOTS]
 
     def return_persistent_maps(self):
+        """Return the persistent maps."""
         return self._hass.data[NEATO_PERSISTENT_MAPS]
+
     def return_maps(self):
+        """Return the maps."""
         return self._hass.data[NEATO_MAP_DATA]
+
     def download_map(self, url):
         """Download a new map image."""
         map_image_data = self.my_neato.get_map_image(url)

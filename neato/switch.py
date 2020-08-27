@@ -22,7 +22,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
     """Set up Neato switch with config entry."""
     dev = []
     neato = hass.data[NEATO_DOMAIN][entry.unique_id].get(NEATO_LOGIN)
-    for robot in hass.data[NEATO_DOMAIN][entry.unique_id].get(NEATO_ROBOTS):
+    robots = hass.data[NEATO_DOMAIN][entry.unique_id].get(NEATO_ROBOTS)
+    for robot in robots:
         for type_name in SWITCH_TYPES:
             dev.append(NeatoConnectedSwitch(neato, robot, type_name))
 
