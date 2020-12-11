@@ -3,27 +3,25 @@ import asyncio
 from datetime import timedelta
 import logging
 
-from pybotvac import Account, Neato, Vorwerk
-from pybotvac.exceptions import NeatoRobotException
+from pybotvac import Account, Neato
+from pybotvac.exceptions import NeatoException
 import voluptuous as vol
 
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_CLIENT_ID, CONF_CLIENT_SECRET
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import config_entry_oauth2_flow, config_validation as cv
+from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 from homeassistant.util import Throttle
 
 from . import api, config_flow
 from .const import (
-    CONF_VENDOR,
     NEATO_CONFIG,
     NEATO_DOMAIN,
     NEATO_LOGIN,
     NEATO_MAP_DATA,
     NEATO_PERSISTENT_MAPS,
     NEATO_ROBOTS,
-    VALID_VENDORS,
-    VENDOR_NEATO,
-    VENDOR_VORWERK,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -35,7 +33,6 @@ CONFIG_SCHEMA = vol.Schema(
             {
                 vol.Required(CONF_CLIENT_ID): cv.string,
                 vol.Required(CONF_CLIENT_SECRET): cv.string,
-                vol.Optional(CONF_VENDOR, default=VENDOR_NEATO): vol.In(VALID_VENDORS),
             }
         )
     },
@@ -45,7 +42,7 @@ CONFIG_SCHEMA = vol.Schema(
 PLATFORMS = ["camera", "vacuum", "switch", "sensor"]
 
 
-async def async_setup(hass, config):
+async def async_setup(hass: HomeAssistantType, config: ConfigType) -> bool:
     """Set up the Neato component."""
     hass.data[NEATO_DOMAIN] = {}
 
@@ -53,12 +50,7 @@ async def async_setup(hass, config):
         return True
 
     hass.data[NEATO_CONFIG] = config[NEATO_DOMAIN]
-
-    if config[NEATO_DOMAIN][CONF_VENDOR] == VENDOR_VORWERK:
-        vendor = Vorwerk()
-    else:
-        vendor = Neato()
-
+    vendor = Neato()
     config_flow.OAuth2FlowHandler.async_register_implementation(
         hass,
         api.NeatoImplementation(
@@ -74,7 +66,21 @@ async def async_setup(hass, config):
     return True
 
 
-async def async_setup_entry(hass, entry):
+async def async_migrate_entry(hass, config_entry: ConfigEntry):
+    """Migrate old entry."""
+    _LOGGER.debug("Migrating from version %s", config_entry.version)
+
+    if config_entry.version < 2:
+        _LOGGER.warning(
+            "Your configuration is outdated. Please delete the integration and add neato botvac again."
+        )
+        return False
+
+    _LOGGER.info("Migration to version %s successful", config_entry.version)
+    return True
+
+
+async def async_setup_entry(hass: HomeAssistantType, entry: ConfigEntry) -> bool:
     """Set up config entry."""
     implementation = (
         await config_entry_oauth2_flow.async_get_config_entry_implementation(
@@ -84,13 +90,13 @@ async def async_setup_entry(hass, entry):
 
     session = config_entry_oauth2_flow.OAuth2Session(hass, entry, implementation)
 
-    neatoSession = api.ConfigEntryAuth(hass, entry, session)
-    hass.data[NEATO_DOMAIN][entry.entry_id] = neatoSession
-    hub = NeatoHub(hass, Account(neatoSession))
+    neato_session = api.ConfigEntryAuth(hass, entry, session)
+    hass.data[NEATO_DOMAIN][entry.entry_id] = neato_session
+    hub = NeatoHub(hass, Account(neato_session))
 
     try:
         await hass.async_add_executor_job(hub.update_robots)
-    except NeatoRobotException as ex:
+    except NeatoException as ex:
         _LOGGER.debug("Failed to connect to Neato API")
         raise ConfigEntryNotReady from ex
 
@@ -104,7 +110,7 @@ async def async_setup_entry(hass, entry):
     return True
 
 
-async def async_unload_entry(hass, entry):
+async def async_unload_entry(hass: HomeAssistantType, entry: ConfigType) -> bool:
     """Unload config entry."""
     unload_ok = all(
         await asyncio.gather(
@@ -123,10 +129,10 @@ async def async_unload_entry(hass, entry):
 class NeatoHub:
     """A My Neato hub wrapper class."""
 
-    def __init__(self, hass, neato: Account):
+    def __init__(self, hass: HomeAssistantType, neato: Account):
         """Initialize the Neato hub."""
-        self._hass = hass
-        self.my_neato = neato
+        self._hass: HomeAssistantType = hass
+        self.my_neato: Account = neato
 
     @Throttle(timedelta(minutes=1))
     def update_robots(self):

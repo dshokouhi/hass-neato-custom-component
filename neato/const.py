@@ -11,12 +11,6 @@ NEATO_ROBOTS = "neato_robots"
 
 SCAN_INTERVAL_MINUTES = 1
 
-SERVICE_NEATO_CUSTOM_CLEANING = "custom_cleaning"
-
-VENDOR_NEATO = ["neato"]
-VENDOR_VORWERK = ["vorwerk"]
-VALID_VENDORS = [VENDOR_NEATO, VENDOR_VORWERK]
-
 MODE = {1: "Eco", 2: "Turbo"}
 
 ACTION = {
